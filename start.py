@@ -32,12 +32,16 @@ class Start:
         text = self.process_job_content(results)
 
         green = '#4DD443'
-        bg = '#35263B'
+        bg = '#36263B'
         # self, text_value, bg_color, max_font_size, image_background, bg_image_name
         stopwords = set(STOPWORDS)
-        stopwords.update(['etc', 'you', 'a', 'this', 'in', 'is', 'an', 'and', 'or','with','will','be'])
+        stopwords.update(['etc', 'you', 'a', 'this', 'in', 'is', 'an', 'and', 'or', 'with', 'will', 'be'])
 
-        GenerateVisualData(text, bg_color=bg, max_font_size=40, image_background=True, bg_image_name='bg.jpg',
+        GenerateVisualData(text,
+                           bg_color=bg,
+                           max_font_size=100,
+                           image_background=True,
+                           bg_image_name='big_fill.png',
                            stopwords=stopwords)
 
     def temp_clean_data(self):
@@ -53,16 +57,22 @@ class Start:
         for row in results:
             line = ''.join(row[1])
             line = line.replace('\\xa0', ' ')
+            line = line.replace('\"', '')
+            line = line.replace('•', '')
+            # email should be removed, but the code below is not tested or used
             email = re.search(r'\w+[\w\.-]*\w+@\w+(-\w+)*[\.\w]+', line)
+            # remove '
+            single_quote = re.search(r'\'+', line)
             row_list = list(row)
-            if email is not None:
-                ee = email.group(0)
+            if single_quote is not None:
+                ee = single_quote.group(0)
                 line = line.replace(ee, '')
                 line = line.replace('\'\'\'\'', ' ')
+
             row_value = {'job_id': row_list[0], 'content': line}
             data.append(row_value)
         return data
 
 
 start = Start()
-start.begin()
+start.temp_clean_data()
